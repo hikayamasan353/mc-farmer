@@ -1,5 +1,6 @@
 const mineflayer = require('mineflayer');
 const pathfinder = require("./pathfinder.js");
+const fs = require("fs");
 const vec3 = require('vec3');
 
 const BED_TIME = 12000;
@@ -11,12 +12,43 @@ let harvestName = 'wheat';
 let expansion = 0;
 let snackTime = false;
 
-const bot = mineflayer.createBot({
-	username: "FarmMachine",
-	host: "localhost",
-	port: 12345,
-	//viewDistance: "tiny",
-});
+// Load and initialize data
+try
+{
+	//If files don't exist
+	if (!fs.existsSync("botdata.json"))
+	{
+		//Write placeholder files
+		fs.writeFileSync("botdata.json",JSON.stringify({}));
+	}
+}
+catch (err) {
+  console.error(err);
+}
+
+
+const botdata=JSON.parse(fs.readFileSync("botdata.json"));
+if(!botdata||!botdata.host||!botdata.auth)
+{
+		//Use default data
+	botdata.host="127.0.0.1";
+	botdata.port=12345;
+	botdata.auth="offline";
+	botdata.username="Farmbot";
+	botdata.password="";
+	botdata.version=null;
+	fs.writeFileSync("botdata.json",JSON.stringify(botdata));
+}
+	
+	//Finally create a bot
+const bot=mineflayer.createBot({
+		host: botdata.host,
+		port: botdata.port,
+		auth: botdata.auth,
+		username: botdata.username,
+		password: botdata.password,
+		version: botdata.version			
+	})
 
 let bedPosition;
 let chestPosition;
