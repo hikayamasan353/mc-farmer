@@ -463,8 +463,15 @@ async function sleepInBed() {
 	}
 
 	await bot.goto(bed.position);
-
-	await bot.sleep(bed);
+	try
+	{
+		await bot.sleep(bed);
+		return;
+	}
+	catch
+	{
+		console.log("Sleeping...");
+	}
 }
 
 async function depositLoop() {
